@@ -42,7 +42,7 @@ contract Marketplace{
     }
 
     //number of Tokens for sale by a specific address
-   mapping(address=>Token[]) private tokensforSale;
+   mapping(address=>Token[]) public tokensforSale;
    
    //get Token full details by ERC721 tokenid
    mapping(uint=>Token) public tokenDetailByTokenID;
