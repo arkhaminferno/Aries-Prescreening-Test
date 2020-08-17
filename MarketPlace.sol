@@ -14,12 +14,9 @@ contract ERC20{
 // ERC721 interface
 //=============================================================================
 contract ERC721{
-    function balanceOf(address owner) public view  returns (uint256){}
      function ownerOf(uint256 tokenId) public view  returns (address){}
-     function safeTransferFrom(address from, address to, uint256 tokenId) public {}
-     function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
-        public returns (bool){}
-         function _transfer(address from, address to, uint256 tokenId) public{}
+     function _transfer(address from, address to, uint256 tokenId) public {}
+   
 }
 
 
@@ -44,7 +41,7 @@ contract Marketplace{
         bool forSale;
     }
 
-    //Tokens for sale by a specific address
+    //number of Tokens for sale by a specific address
    mapping(address=>Token[]) private tokensforSale;
    
    //get Token full details by ERC721 tokenid
@@ -76,9 +73,10 @@ contract Marketplace{
     
      /* @dev Transfer of Ownership of a NFT token
    */
-    function safeTransferFromERC721(address from, address to, uint256 tokenId) private{
+    function safeTransferFromERC721(address from, address to, uint256 tokenId) private returns (bool){
          ERC721 erc721 = ERC721(ERC721TokenAddress);
-         erc721.safeTransferFrom(from,to,tokenId);
+         erc721._transfer(from, to, tokenId);
+         return true;
         
     }
     
@@ -131,6 +129,7 @@ contract Marketplace{
     function buyERC721Token(uint _tokenid,uint _amount) public returns(bool){
         require(BalanceOfERC20Holder(msg.sender) >= _amount,"Not Enough Balance!");
         require(tokenDetailByTokenID[_tokenid].forSale ==true,"Not for Sale!");
+        require(_amount == tokenDetailByTokenID[_tokenid].price,"Wrong Buy price given" );
         ERC20 erc20 = ERC20(ERC20TokenAddress);
         erc20.transfer(tokenDetailByTokenID[_tokenid].owner,_amount);
         safeTransferFromERC721(address(this),msg.sender,_tokenid);
